@@ -1,0 +1,27 @@
+galaxy_info:
+  role_name: consul_install
+  author: Felipe Rocha
+  description: Install and preconfigure Hashicorp consul
+  company: Raipe Systems
+
+  license: MIT
+
+  min_ansible_version: 2.10
+
+  platforms:
+  - name: Ubuntu
+    versions:
+    - 18.04
+    - 20.04
+    
+  galaxy_tags:
+    - consul
+    - hashicorp
+    - ubuntu
+    - install
+    - configure
+
+dependencies: 
+  - src: https://github.com/felipefrocha/ansible-role-ubuntu-update.git
+    version: main
+    name: ubuntu_update

@@ -1,0 +1,33 @@
+---
+# defaults file for config_ubuntu
+ssh_pubkey_path: /home/rocha/.ssh/aws_educate.pub
+
+hostname:
+  enabled: False
+  name: testserver
+
+ubuntu:
+  packages:
+    - apt-transport-https
+    - ca-certificates 
+    - curl 
+    - gnupg-agent 
+    - software-properties-common
+    - wget
+    - conntrack
+    - selinux-utils
+    - htop
+    - unzip
+    - dnsutils 
+    - dnsmasq-base 
+    - dnsmasq
+
+python:
+  enabled: True
+  packages:
+    - python3-pip
+    - python3-setuptools
+    - virtualenv
+  requirements:
+    - pip
+    - anisble

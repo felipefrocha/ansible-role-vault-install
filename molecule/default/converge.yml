@@ -1,0 +1,10 @@
+---
+- name: Converge
+  hosts: all
+  tasks:
+    - name: Load Configuration
+      include_vars:
+        file: "{{ lookup('env', 'PWD') }}/config.yml"
+    - name: Include consul_install
+      include_role:
+        name: "consul_install"
