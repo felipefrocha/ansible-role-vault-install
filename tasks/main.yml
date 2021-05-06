@@ -51,8 +51,8 @@
         - "{{ consul_tls_dir }}"
 
     - name: Ensure Consul files
-      ansible.builtin.file:
-        path: "{{ consul_env_vars }}"
+      ansible.builtin.copy:
+        path: "{{ item }}"
         state: touch
         owner: "{{ consul_user }}"
         group: "{{ consul_group }}"
