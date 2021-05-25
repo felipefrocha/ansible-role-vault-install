@@ -19,8 +19,12 @@ ubuntu:
     - htop
     - unzip
     - dnsutils 
-    - dnsmasq-base 
-    - dnsmasq
+    # - ruby 
+    # - rubygems 
+    # - git 
+    # - nodejs-legacy 
+    # - npm 
+    # - nginx
 
 python:
   enabled: True

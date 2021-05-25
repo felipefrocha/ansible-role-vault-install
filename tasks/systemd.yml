@@ -1,0 +1,10 @@
+---
+- name: Configure Systemd
+  block: 
+    - name: Copy Systemd File config
+      ansible.builtin.template:
+        src: "vault.service.j2"
+        dest: "{{systemd_path}}/vault.service"
+        owner: "{{vault_user}}"
+        group: "{{vault_group}}"
+        mode: '0644'

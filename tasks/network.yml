@@ -1,0 +1,23 @@
+---
+# - name: Vault config resolv
+#   ansible.builtin.lineinfile:
+#     path: /etc/resolv.conf
+#     regexp: '# This file is'
+#     line: nameserver 127.0.0.1
+#     state: present
+#   become: yes
+
+    
+# - name: Vault config profile addr
+#   lineinfile:
+#     path: "{{ vault_profile_script }}"
+#     state: present
+#     regexp: '^export VAULT_HTTP_ADDR.*'
+#     line: export VAULT_HTTP_ADDR=http://127.0.0.1:8500
+
+# - name: Vault config dnsmasq
+#   lineinfile:
+#     path: /etc/dnsmaq.d/vault
+#     state: present
+#     regexp: '^server.*'
+#     line: 'server=/vault/127.0.0.1#8600'

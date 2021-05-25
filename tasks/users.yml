@@ -1,0 +1,23 @@
+---
+- name: Pre requirements
+  block:
+    - name: "Ensure {{vault_group}} Groups exists"
+      ansible.builtin.group:
+        name: "{{ vault_group }}"
+        system: yes
+        state: present
+
+    - name: "Ensures {{ vault_user }} User Exists"
+      ansible.builtin.user:
+        name: "{{ vault_user }}"
+        create_home: yes
+        home: "{{ vault_home }}"
+        shell: /bin/bash
+        groups: 
+          - "{{ vault_group }}"
+          - sudo
+        state: present
+        system: yes
+        expires: -1
+
+      

@@ -1,133 +1,14 @@
----
-# tasks file for consul_install
-- name: Pre requirements
-  block:
-    - name: "Ensure {{consul_group}} Groups exists"
-      ansible.builtin.group:
-        name: "{{ consul_group }}"
-        system: yes
-        state: present
-
-    - name: "Ensures {{ consul_user }} User Exists"
-      ansible.builtin.user:
-        name: "{{ consul_user }}"
-        create_home: no
-        shell: /bin/false
-        groups: "{{ consul_group }}"
-        state: present
-        system: yes
-        expires: -1
-
-- name: Install Consul
-  block:
-    - name: Downloading binaries
-      get_url:
-        url: "{{ consul_url }}"
-        dest: "/tmp/{{ consul_zip }}"
-        mode:  "{{ consul_mode }}"
-
-    - name: Install Binaries
-      ansible.builtin.unarchive:
-        src: "/tmp/{{ consul_zip }}"
-        dest: "{{ consul_dir }}"
-        mode: 0755
-        owner: "{{ consul_user }}"
-        group: "{{ consul_group }}"
-        remote_src: yes
-
-- name: Prapare Consul
-  block:
-    - name: Create Consul directories if they do not exist
-      file:
-        path: "{{ item }}"
-        state: directory
-        owner: "{{ consul_user }}"
-        group: "{{ consul_group }}"
-        mode: '0644'
-        recurse: yes
-      loop: 
-        - "{{ consul_config_dir }}"
-        - "{{ consul_data_dir }}"
-        - "{{ consul_tls_dir }}"
-
-    - name: Ensure Consul files
-      ansible.builtin.copy:
-        path: "{{ item }}"
-        state: touch
-        owner: "{{ consul_user }}"
-        group: "{{ consul_group }}"
-        mode: '0644'
-      loop:
-        - "{{ consul_env_vars }}"
-        - "{{ consul_profile_script }}"
-        - /etc/sudoers.d/consul
-        - /etc/dnsmaq.d/consul
-
-    - name: Consul config resolv
-      ansible.builtin.lineinfile:
-        path: /etc/resolv.conf
-        regexp: '# This file is'
-        line: nameserver 127.0.0.1
-        state: present
-      become: yes
-
-    - name: Consul config env vars dev
-      ansible.builtin.lineinfile:
-        path: "{{ consul_env_vars }}"
-        regexp: '^FLAGS.*'
-        insertbefore: BOF
-        line: 'FLAGS=-dev -ui -client 0.0.0.0'
-        state: present
-
-    - name: Consul config env vars addr
-      ansible.builtin.lineinfile:
-        path: "{{ consul_env_vars }}"
-        regexp: '^CONSUL.*'
-        insertafter: '^FLAGS.*'
-        line: 'CONSUL_HTTP_ADDR=http://127.0.0.1:8500'
-        state: present
-        
-    - name: Consul config profile addr
-      lineinfile:
-        path: "{{ consul_profile_script }}"
-        state: present
-        regexp: '^export CONSUL_HTTP_ADDR.*'
-        line: export CONSUL_HTTP_ADDR=http://127.0.0.1:8500
-
-    - name: Consul config sudoers
-      lineinfile:
-        path: /etc/sudoers.d/consul
-        state: present
-        regexp: 'consul ALL=(ALL).*'
-        line: 'consul ALL=(ALL) NOPASSWD: /usr/bin/echo, /usr/bin/tee, /usr/bin/cat, /usr/bin/sed, /usr/bin/systemctl'
-
-    - name: Consul config dnsmasq
-      lineinfile:
-        path: /etc/dnsmaq.d/consul
-        state: present
-        regexp: '^server.*'
-        line: 'server=/consul/127.0.0.1#8600'
-
-- name: Configure Systemd
-  block: 
-    - name: Copy Systemd File config
-      ansible.builtin.copy:
-        src: "consul.service"
-        dest: "{{systemd_path}}/consul.service"
-        owner: "{{consul_user}}"
-        group: "{{consul_group}}"
-        mode: '0644'
-        
-    - name: Enable dnsmasq systemd
-      ansible.builtin.systemd:
-        name: dnsmasq
-        state: started
-        enabled: yes
-
-    - name: Enable consul systemd
-      ansible.builtin.systemd:
-        name: consul
-        state: started
-        enabled: yes
-
+---    
+- name: Install Requirements
+  include: requirements.yml
+- name: Configure Users and Permissions
+  include: users.yml
+- name: Configure Files And Folders
+  include: folders_files.yml
+- name: Install Software
+  include: install.yml
+- name: Configure Network
+  include: network.yml
+- name: Configure Service
+  include: systemd.yml
       

@@ -5,6 +5,6 @@
     - name: Load Configuration
       include_vars:
         file: "{{ lookup('env', 'PWD') }}/config.yml"
-    - name: Include consul_install
+    - name: Include vault_install
       include_role:
-        name: "consul_install"
+        name: "vault_install"

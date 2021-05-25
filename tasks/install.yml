@@ -1,0 +1,38 @@
+---
+- name: Install Vault
+  block:
+    - name: Downloading binaries
+      get_url:
+        url: "{{ vault_url }}"
+        dest: "/tmp/{{ vault_zip }}"
+        mode:  "{{ vault_mode }}"
+
+    - name: Install Binaries
+      ansible.builtin.unarchive:
+        src: "/tmp/{{ vault_zip }}"
+        dest: "{{ vault_dir }}"
+        mode: 0755
+        owner: "{{ vault_user }}"
+        group: "{{ vault_group }}"
+        remote_src: yes
+    
+    - name: Test Installation
+      shell: |
+        vault --version
+      register: test_vault
+    
+    - debug:
+        msg: "This is vault version: {{ test_vault.stdout }}"
+    
+    # - name: Auto Complete 
+    #   shell: |
+    #     vault -autocomplete-install
+    #     complete -C /usr/bin/vault vault
+    
+    - name: Insert Run Vault script
+      ansible.builtin.copy:
+        src: files/run-vault
+        dest: "{{ vault_dir }}/run-vault"
+        owner: "{{vault_user}}"
+        group: "{{vault_group}}"
+        mode: 0755

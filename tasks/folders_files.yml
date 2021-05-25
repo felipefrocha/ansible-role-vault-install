@@ -1,0 +1,62 @@
+---
+- name: Prapare Vault
+  block:
+    - name: Create Vault directories if they do not exist
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+        owner: "{{ vault_user }}"
+        group: "{{ vault_group }}"
+        mode: '0644'
+        recurse: yes
+      loop: 
+        - "{{ vault_config_dir }}"
+        - "{{ vault_data_dir }}"
+        - "{{ vault_tls_dir }}"
+
+    - name: Ensure Vault files
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: touch
+        owner: "{{ vault_user }}"
+        group: "{{ vault_group }}"
+        mode: '0644'
+      loop:
+        # - "{{ vault_env_vars }}"
+        - "{{ vault_profile_script }}"
+        - /etc/sudoers.d/vault
+        # - /etc/dnsmaq.d/vault
+
+    - name: Ensure Vault HCL File
+      ansible.builtin.template:
+        src: "{{ item }}.j2"
+        dest: "{{ vault_config_dir }}/{{ item }}"
+        owner: "{{ vault_user }}"
+        group: "{{ vault_group }}"
+        mode: '0640'
+      loop:
+        - "{{ vault_hcl_file }}"
+        - "{{ vault_server_hcl_file }}"
+
+    # - name: Create ACL token
+    #   shell: vault keygen 
+    #   register: vault_token
+    
+    # - name: Insert ACL token
+    #   shell: "echo encrypt = {{ vault_token.stdout }} >> {{ vault_hcl_file }}"
+
+            
+    - name: Vault config sudoers
+      lineinfile:
+        path: /etc/sudoers.d/vault
+        state: present
+        regexp: 'vault ALL=(ALL).*'
+        line: 'vault ALL=(ALL) NOPASSWD: /usr/bin/echo, /usr/bin/tee, /usr/bin/cat, /usr/bin/sed, /usr/bin/systemctl'
+
+    - name: Run Vault Script
+      ansible.builtin.copy:
+        src: files/run-vault
+        dest: /usr/local/bin/run-vault
+        owner: "{{ vault_user }}"
+        group: "{{ vault_group }}"
+        mode: '0640'

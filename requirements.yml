@@ -1,5 +1,5 @@
 ---
-- src: https://github.com/felipefrocha/ansible-role-ubuntu-update.git
+- src: https://github.com/felipefrocha/ansible-role-consul-install.git
   version: main
   scm: git
-  name: ubuntu_update
+  name: consul_install

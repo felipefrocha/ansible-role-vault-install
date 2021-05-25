@@ -1,17 +1,32 @@
 ---
-# vars file for consul_install
-consul_version: 1.7.1
-consul_zip: "consul_{{ consul_version }}_linux_amd64.zip"
-consul_url: "https://releases.hashicorp.com/consul/{{ consul_version }}/{{ consul_zip }}"
-consul_dir: /usr/local/bin
-consul_path: "{{ consul_dir }}/consul"
-consul_config_dir: /etc/consul.d
-consul_data_dir: /opt/consul/data
-consul_tls_dir: /opt/consul/tls
-consul_env_vars: "{{ consul_config_dir }}/consul.conf"
-consul_profile_script: /etc/profile.d/consul.sh
-consul_user: consul
-consul_group: consul
-consul_mode: 0644
+# vars file for vault_install
+vault_version: 1.7.2
+vault_default_path: /opt/vault/
+vault_zip: "vault_{{ vault_version }}_linux_amd64.zip"
+vault_url: "https://releases.hashicorp.com/vault/{{ vault_version }}/{{ vault_zip }}"
+vault_dir: /usr/local/bin
+vault_path: "{{ vault_dir }}/vault"
+vault_home: /etc/vault.d
+vault_config_dir: /etc/vault.d
+vault_data_dir: "{{vault_default_path }}/data"
+vault_tls_dir: "{{vault_default_path }}/tls"
+vault_tls_ca_dir: "{{vault_default_path }}/tls/ca"
+# vault_env_vars: "{{ vault_config_dir }}/vault.conf"
+vault_hcl_file: "vault.hcl"
+vault_server_hcl_file: "server.hcl"
+vault_profile_script: /etc/profile.d/vault.sh
+vault_user: vault
+vault_group: vault
+vault_mode: 0644
+
+vault_retry_join: provider=aws tag_key=vault-cluster-name tag_value=##CONSUL_CLUSTER_NAME##
+vault_datacenter: queima
+
 
 systemd_path: /etc/systemd/system
+
+vault_dependecies_packages:
+- awscli
+- curl
+- unzip
+- jq
